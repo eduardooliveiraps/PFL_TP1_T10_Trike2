@@ -14,4 +14,5 @@
   - Assim que um jogador coloca uma peça da sua cor numa posição permitida, o peão fica sobre essa mesma peça.
   - Quando o peão fica preso, o jogo termina.
   - No final do jogo, cada jogador ganha um ponto para cada peça da sua cor adjacente ou abaixo do peão. A pessoa com a maior pontuação vence. Não existem empates.
+Nota: Esta informação está explicada detalhadamente no [website oficial do jogo] (https://boardgamegeek.com/boardgame/307379/trike)
 
