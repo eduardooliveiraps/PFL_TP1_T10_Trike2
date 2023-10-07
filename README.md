@@ -5,7 +5,7 @@
 - Eduardo Martins Oliveira - 202108690
 
 ### Descrição do Jogo
-  Trike é um jogo de estratégia abstrata combinatória para dois jogadores. O jogo gira em torno de criar armadilhas, desmontar armadilhas do adversário e manobrar uma peça compartilhada para a sua própria armadilha com o objetivo de vencer.
+  Trike é um jogo de estratégia abstrata combinatória para dois jogadores. O jogo gira em torno de criar armadilhas, desmontar armadilhas do adversário e manobrar uma peça compartilhada (peão neutro) para a sua própria armadilha com o objetivo de vencer.
   
   Regras: 
   - O tabuleiro do jogo tem a forma de um triângulo equilátero, e é constituído por posições hexagonais.
