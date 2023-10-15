@@ -1,10 +1,10 @@
 # Trike
 
-### Group 2
+## Group 2
 - Bruno Miguel de Siuéia Duvane - 202109244
 - Eduardo Martins Oliveira - 202108690
 
-### Descrição do Jogo
+## Descrição do Jogo
   Trike é um jogo de estratégia abstrata combinatória para dois jogadores. O jogo gira em torno de criar armadilhas, desmontar armadilhas do adversário e manobrar uma peça compartilhada (peão neutro) para a sua própria armadilha com o objetivo de vencer.
   
   Regras: 
@@ -17,4 +17,8 @@
   - No final do jogo, cada jogador ganha um ponto para cada peça da sua cor adjacente ou abaixo do peão. A pessoa com a maior pontuação vence. Não existem empates.
     
 Nota: Esta informação encontra-se detalhada no [website oficial do jogo](https://boardgamegeek.com/boardgame/307379/trike)
+
+## Lógica do Jogo
+### Representação Interna do Estado do Jogo
+
 
