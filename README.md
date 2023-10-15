@@ -21,5 +21,6 @@ Nota: Esta informação encontra-se detalhada no [website oficial do jogo](https
 ## Lógica do Jogo
 ### Representação Interna do Estado do Jogo
   Em qualquer momento do jogo, o estado do jogo (GameState) é representado por uma lista de dois elementos: [Player,Board], onde Player é o jogador atual que realizará a próxima jogada e Board é o estado atual do tabuleiro.
+  
   O Player é representado por um átomo que pode ser "p1" para o player 1 ou "p2" para o player 2, dependendo do jogador atual. Cada célula/posição do tabuleiro pode ser representada pelo átomo "n" para o peão neutro, "b" para uma peça branca, "p" para uma peça preta ou "." para uma posição vazia. 
 
