@@ -1,10 +1,11 @@
 :- use_module(library(lists)).
 :- use_module(library(random)).
+:- consult(board).
 
 % dynamic player(+Player, -PlayerType)
 :- dynamic player/2.
 % dynamic difficulty(+Computer,-Level)
-:- dynamic difficulty/2.
+:- dynamic difficulty_level/2.
 
 % valid_board_size(+Size)
 % Facts to validate the board size
@@ -27,7 +28,7 @@ game_setup([Board, Player]) :-
     menu_option(Input),
     first_move_player(Player),
     board_size(Size),
-    initial_state(Size, Board).
+    initial_state(Size, [Board,Player]).
 
 % Main menu and its options
 write_main_menu :-
@@ -102,7 +103,7 @@ computer_difficulty_level(Computer) :-
     read(Level),
     (   
         valid_computer_level(Level) ->
-            asserta(difficulty(Computer, Level))
+            asserta(difficulty_level(Computer, Level))
         ;   
             write('Invalid computer level. Please choose a valid computer level ("1." or "2.").'), nl,
             fail
