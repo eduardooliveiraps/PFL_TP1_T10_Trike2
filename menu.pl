@@ -2,10 +2,12 @@
 :- use_module(library(random)).
 :- consult(board).
 
-% dynamic player(+Player, -PlayerType)
+% dynamic player(+Player,-PlayerType)
 :- dynamic player/2.
 % dynamic difficulty(+Computer,-Level)
 :- dynamic difficulty_level/2.
+% dynamic player_symbol(+Player,-Symbol)
+:- dynamic player_symbol/2.
 
 % valid_board_size(+Size)
 % Facts to validate the board size
@@ -22,13 +24,15 @@ valid_computer_level(2).
 % Prompts the user to select a game mode, handles the chosen mode, chooses the player who makes the first move,
 % asks for the board size, and initializes the board state.
 % Initializes the game state with the Board and the player who makes the first move
-game_setup([Board, Player]) :-
+game_setup([Board, Player, PlayNumber]) :-
     write_main_menu,
     read(Input),
     menu_option(Input),
     first_move_player(Player),
     board_size(Size),
-    initial_state(Size, [Board,Player]).
+    default_player_symbol,
+    PlayNumber is 1,
+    initial_state(Size, [Board,Player,PlayNumber]).
 
 % Main menu and its options
 write_main_menu :-
@@ -108,3 +112,8 @@ computer_difficulty_level(Computer) :-
             write('Invalid computer level. Please choose a valid computer level ("1." or "2.").'), nl,
             fail
     ).
+
+% Introduces information relating to the symbol that represents each player into the program's knowledge base
+default_player_symbol :-
+    asserta(player_symbol(p1, 'X')),
+    asserta(player_symbol(p2, 'O')).
