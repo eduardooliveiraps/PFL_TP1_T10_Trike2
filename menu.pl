@@ -1,13 +1,4 @@
-:- use_module(library(lists)).
-:- use_module(library(random)).
 :- consult(board).
-
-% dynamic player(+Player,-PlayerType)
-:- dynamic player/2.
-% dynamic difficulty(+Computer,-Level)
-:- dynamic difficulty_level/2.
-% dynamic player_symbol(+Player,-Symbol)
-:- dynamic player_symbol/2.
 
 % valid_board_size(+Size)
 % Facts to validate the board size
@@ -24,15 +15,16 @@ valid_computer_level(2).
 % Prompts the user to select a game mode, handles the chosen mode, chooses the player who makes the first move,
 % asks for the board size, and initializes the board state.
 % Initializes the game state with the Board and the player who makes the first move
-game_setup([Board, Player, PlayNumber]) :-
+game_setup([Board, Player, MoveNumber]) :-
     write_main_menu,
     read(Input),
     menu_option(Input),
     first_move_player(Player),
     board_size(Size),
-    default_player_symbol,
-    PlayNumber is 1,
-    initial_state(Size, [Board,Player,PlayNumber]).
+    default_player_checker,
+    set_default_neutral_pawn_coordinates(Size),
+    MoveNumber is 1,
+    initial_state(Size, Board), !.
 
 % Main menu and its options
 write_main_menu :-
@@ -114,6 +106,10 @@ computer_difficulty_level(Computer) :-
     ).
 
 % Introduces information relating to the symbol that represents each player into the program's knowledge base
-default_player_symbol :-
-    asserta(player_symbol(p1, 'X')),
-    asserta(player_symbol(p2, 'O')).
+default_player_checker :-
+    asserta(player_checker(p1, x)),
+    asserta(player_checker(p2, o)).
+
+set_default_neutral_pawn_coordinates(Size) :-
+    board(Size, Cols, Rows),
+    asserta(neutral_pawn_coordinates(Rows-Cols)).

@@ -1,3 +1,21 @@
+:- use_module(library(lists)).
+:- use_module(library(random)).
+
+% dynamic player(+Player,-PlayerType)
+:- dynamic player/2.
+
+% dynamic difficulty(+Computer,-Level)
+:- dynamic difficulty_level/2.
+
+% dynamic player_checker(+Player,-Symbol)
+:- dynamic player_checker/2.
+
+% dynamic neutral_pawn_coordinates(Row-Col)
+:- dynamic neutral_pawn_coordinates/1.
+
+% dynamic player_score(+Player, -Score)
+:- dynamic player_score/2.
+
 % board(+Size, -Board)
 % Defines the initial game board for different sizes.
 board(6,[
@@ -29,17 +47,16 @@ board(15,9,5).
 % symbol(+Element, -Symbol)
 symbol(p1, S) :- S='1'.     
 symbol(p2, S) :- S='2'.
-symbol(w,S) :- S='W'.
-symbol(b,S) :- S='B'.
-symbol(n,S) :- S='N'.
+symbol(x,S) :- S=' X '. 
+symbol(o,S) :- S=' O '.
+symbol(n,S) :- S=' N '.
 symbol(blank,S) :- S='---'.
 symbol(cell,S) :- S='   '.
 
 % initial_state(+Size, -GameState)
 % Initializes the initial state of the game based on the given board size.
-initial_state(Size,[Board,Player,PlayNumber]) :-
-    board(Size,Board),
-    GameState = [Board,Player,PlayNumber].
+initial_state(Size,Board) :-
+    board(Size,Board).
 
 % display_column_numbering(+ColumnNumber, +TotalNumberOfColumns)
 % Displays column numbering from 1 to Max on the game board.
@@ -69,13 +86,21 @@ display_line(N):-
 
 % display_rows(+Board, +Row, +TotalRows, +Columns)
 % Displays the rows of the game board with their respective elements.
-display_rows([], TotalRows, TotalRows, _).
-display_rows([Line|Rest], Row, TotalRows, Columns) :-
-    format(' ~d |', [Row]),
-    display_elements(Line), nl,
+display_rows(_, LineNumber, Rows, _):- 
+    LineNumber > Rows, nl, !.
+display_rows([Line|Rest], LineNumber, Rows, Columns):-
+    LineNumber > 9,
+    format(' ~d |', [LineNumber]),
+    display_elements(Line),nl,
     display_line(Columns),
-    NextRow is Row + 1,
-    display_rows(Rest, NextRow, TotalRows, Columns).
+    NextLineNumber is LineNumber + 1,
+    display_rows(Rest, NextLineNumber, Rows, Columns), !.
+display_rows([Line|Rest], LineNumber, Rows, Columns):-
+    format(' ~d |', [LineNumber]),
+    display_elements(Line),nl,
+    display_line(Columns),
+    NextLineNumber is LineNumber + 1,
+    display_rows(Rest, NextLineNumber, Rows, Columns).
 
 % display_elements(+Line)
 % Displays the elements of a particular row in the game board.
@@ -88,11 +113,13 @@ display_elements([CurrentElement|Rest]) :-
 % display_player_turn(+Player)
 % Displays a message indicating the player who will make the next move
 display_player_turn(Player) :-
-    symbol(Player, Symbol),
-    format(' > Player ~w turn to play!', [Symbol]).
+    player(Player, PlayerType),
+    player_checker(Player, Checker),
+    symbol(Checker, Symbol),
+    format(' > ~w turn to play! Your checker is:~w', [PlayerType, Symbol]).
 
 
-% direction_from_checker(+BoardSize, +CellCoordinate, +CellsCoordinatesList)
+% direction_from_checker(+BoardSize, +NeutralPawnCoordinate, +PathCellList)
 %Predicate that presents a list with coordinates of cells that can be reached
 % in a given direction from a predefined cell, on a fixed size board
 
