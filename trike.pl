@@ -58,8 +58,8 @@ find_out_winner([Board, Player,_], Winner) :-
     length(Board, Rows),
     board(Size, _, Rows),
     other_player(Player, OtherPlayer),
-    asserta(player_score(Player, 1)),
-    asserta(player_score(OtherPlayer, 0)),
+    asserta(player_score(Player, 0)),
+    asserta(player_score(OtherPlayer, 1)),
     calculate_total_score(Board, Size, NeutralRow-NeutralCol, Player, OtherPlayer),
     decide_the_winner(Player, OtherPlayer, Winner).
 
@@ -251,19 +251,25 @@ at_least_one_cell_empty(Board, Size, NeutralRow-NeutralCol) :-
 % calculate_total_score(+Board, +Size, +NeutralRow-NeutralCol, +Player, +OtherPlayer)
 % Determines the total score
 calculate_total_score(Board, Size, NeutralRow-NeutralCol, Player, OtherPlayer) :-
-    direction_from_checker(Size, NeutralRow-NeutralCol, List),
-    add_1_point(Board, List, Player, OtherPlayer).
+    first_elements_list(Size, NeutralRow-NeutralCol, FirstElementsList),
+    add_points_due_to_checker_type(Board, Player, OtherPlayer, FirstElementsList).
 
-% add_1_point(+Board, +List, +Player, +OtherPlayer)
-% Adds one point based on the checker type
-add_1_point(Board, List, Player, OtherPlayer) :-
-    nth1(1, List, FirstElementCoordinate),
-    check_checker_type(Board, FirstElementCoordinate, Type),
-    add_score_due_to_type(Type, Player, OtherPlayer).
+% first_elements_list(+Size, +NeutralRow-NeutralCol, -FirstElementsList)
+% Retrieves the list of first elements from the 'direction_from_checker' predicate for a given neutral position.
+first_elements_list(Size, NeutralRow-NeutralCol, FirstElementsList) :-
+    bagof(FirstElement, Args^(direction_from_checker(Size, NeutralRow-NeutralCol, Args), nth1(1, Args, FirstElement)), FirstElementsList).
+
+% add_points_due_to_checker_type(+Board, +Player, +OtherPlayer, +List)
+% Adds points based on the checker type for a list of cell positions.
+add_points_due_to_checker_type(_,_,_,[]).
+add_points_due_to_checker_type(Board, Player, OtherPlayer, [H|T]) :-
+    check_checker_type(Board, H, Type),
+    add_score_due_to_type(Type, Player, OtherPlayer),
+    add_points_due_to_checker_type(Board, Player, OtherPlayer, T).
 
 % check_checker_type(+Board, +Row-Col, -Type)
 % Retrieves the type of the checker at the specified Row and Column
-check_checker_type(Board, Row-Col,Type) :-
+check_checker_type(Board, Row-Col, Type) :-
     nth1(Row, Board, RowList), 
     nth1(Col, RowList, Type).
 
