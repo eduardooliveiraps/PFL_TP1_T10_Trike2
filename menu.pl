@@ -50,14 +50,14 @@ menu_option(2) :-
     write('Human vs Computer\n'),
     asserta(player(p1, player)),
     asserta(player(p2, computer)),
-    computer_difficulty_level(computer).
+    computer_difficulty_level(p2).
 
 menu_option(3) :-
     write('Computer vs Computer\n'),
     asserta(player(p1, computer1)),
     asserta(player(p2, computer2)),
-    computer_difficulty_level(computer1),
-    computer_difficulty_level(computer2).
+    computer_difficulty_level(p1),
+    computer_difficulty_level(p2).
 
 menu_option(_Other) :-
     write('\nERROR: Invalid option!\n\n'),

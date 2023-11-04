@@ -71,8 +71,23 @@ choose_move([Board,Player,MoveNumber], Row-Col) :-
     get_move([Board,Player,MoveNumber],Row-Col),
     validate_move([Board,Player,MoveNumber], Row-Col), !.
 choose_move([Board,Player,MoveNumber], Move):-
-    difficulty(Player, Level),                  
+    difficulty_level(Player, Level),                  
     choose_move([Board,Player,MoveNumber], Player, Level, Move), !. 
+
+% choose_move(+GameState, +Player, +Level, -Move)
+% Selects a random move for the computer
+choose_move(GameState, Player, 1,  Row-Col):-
+    valid_moves(GameState, Player, ListOfMoves),
+    random_member(Row-Col, ListOfMoves).
+
+% valid_moves(+GameState, +Player, -ListOfMoves)
+% Calculates a list of available moves for the current game state.
+valid_moves(GameState, _, ListOfMoves):-
+    findall(Row-Col, validate_move(GameState,Row-Col),ListOfMoves),
+    \+length(ListOfMoves, 0), !.
+valid_moves(GameState, Player, ListOfMoves):-
+    [Board,Player,MoveNumber] = GameState,
+    findall(Row-Col, validate_move([Board,Player,MoveNumber],Row-Col),ListOfMoves).
 
 % get_move(+GameState,-Coordinate)
 get_move([_, _, 2], _-_) :- true.
@@ -121,6 +136,7 @@ move([Board,Player,1], Row-Col, NewGameState) :-
     NewMoveNumber is 2,
     NewGameState = [NewBoard,NewPlayer,NewMoveNumber].
 move([Board,Player,2],_-_,NewGameState) :-
+    \+ difficulty_level(Player,_),
     swap_sides_decision(Choice),
     Choice = 'y' ->
         write('You chose to swap sides!'), nl,
