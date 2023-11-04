@@ -55,7 +55,7 @@ symbol(cell,S) :- S='   '.
 
 % initial_state(+Size, -GameState)
 % Initializes the initial state of the game based on the given board size.
-initial_state(Size,Board) :-
+initial_state(Size,[Board,_,_]) :-
     board(Size,Board).
 
 % display_column_numbering(+ColumnNumber, +TotalNumberOfColumns)

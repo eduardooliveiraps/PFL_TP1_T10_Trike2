@@ -24,7 +24,7 @@ game_setup([Board, Player, MoveNumber]) :-
     default_player_checker,
     set_default_neutral_pawn_coordinates(Size),
     MoveNumber is 1,
-    initial_state(Size, Board), !.
+    initial_state(Size, [Board,_,_]), !.
 
 % Main menu and its options
 write_main_menu :-
