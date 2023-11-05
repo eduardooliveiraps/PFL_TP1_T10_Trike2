@@ -89,6 +89,46 @@ valid_moves(GameState, Player, ListOfMoves):-
     [Board,Player,MoveNumber] = GameState,
     findall(Row-Col, validate_move([Board,Player,MoveNumber],Row-Col),ListOfMoves).
 
+% choose_move(+GameState, +Player, +Level, -Move)
+% Selects a greedy move for the computer
+choose_move([Board,_,1], Player, 2, Row-Col) :-
+    length(Board, Rows),
+    board(_, Columns, Rows),
+    Row is 1,
+    Col is Columns // 2 + 1.
+choose_move(GameState, Player, 2, Row-Col):-
+	valid_moves(GameState, Player, ListOfMoves), 
+    other_player(Player, OtherPlayer),
+    check_ListOfMoves_Size(ListOfMoves, Size),
+    Size == 1 ->
+        ListOfMoves = [Row-Col|_]
+    ;
+    check_possibility_of_winning(GameState, Player, OtherPlayer, ListOfMoves, Row-Col, Return),
+    Return == break ->
+        true
+    ;
+	findall(Value-Coordinate, ( member(Coordinate, ListOfMoves), 
+                                move(GameState, Coordinate, NewGameState),
+                                retract(player_score(Player,_)),
+                                asserta(player_score(Player, 1)), 
+                                value(NewGameState,Player, Value)
+                                ), Pairs),
+    sort(Pairs, SortedPairs),
+    last(SortedPairs, Max-_),
+    findall(Coordinates, member(Max-Coordinates, SortedPairs), MaxCoordinates),
+    random_member(Row-Col, MaxCoordinates).
+
+% value(+GameState, +Player, -Value)
+% Calculates the value of the current board for a specific player based on the position of the neutral pawn
+value([Board,_,_],Player, Value) :-
+    neutral_pawn_coordinates(NeutralRow, NeutralCol),
+    length(Board, Rows),
+    board(Size, _, Rows),
+    other_player(Player,OtherPlayer),
+    calculate_preview_score(Board, Size, NeutralRow-NeutralCol, Player, OtherPlayer),
+    player_score(Player, Score),
+    Value is Score.  
+
 % get_move(+GameState,-Coordinate)
 get_move([_, _, 2], _-_) :- true.
 get_move([Board, _, _], Row-Col):-
@@ -308,8 +348,61 @@ congratulate(Winner) :-
     player(Winner, WinnerPlayer),
     player_score(Winner, Score),
     format(' > The ~w won with a score of ~d. Congratulations!', [WinnerPlayer,Score]), nl.
-                                                                                    
 
+% check_possibility_of_winning(+GameState, +Player, +OtherPlayer, +List, -Row-Col, -Return)
+% Checks the possibility of winning based on a list of coordinates of valid moves                                                                          
+check_possibility_of_winning(_,_,_,[],_,_).
+check_possibility_of_winning([Board, Player, _], Player, OtherPlayer, [H|T], Row-Col, Return) :-
+    length(Board, Rows),
+    board(Size, _, Rows),
+    at_least_one_cell_empty(Board, Size, H),
+    Return = continue.
+check_possibility_of_winning([Board, Player, _], Player, OtherPlayer, [H|T], Row-Col, Return) :-
+    length(Board, Rows),
+    board(Size, _, Rows),
+    \+ at_least_one_cell_empty(Board, Size, H),
+    asserta(player_score(Player,1)),
+    calculate_preview_score(Board, Size, H, Player, OtherPlayer),
+    player_score(Player, Score),
+    Score > 0 ->
+        Row-Col = H,
+        Return = break
+    ;
+    check_possibility_of_winning([Board, Player, _], Player, OtherPlayer, T, Row-Col, Return).
+
+% calculate_preview_score(+Board, +Size, +NeutralRow-NeutralCol, +Player, +OtherPlayer)
+% Calculates the score based on the game board and a specific coordinate
+calculate_preview_score(Board, Size, NeutralRow-NeutralCol, Player, OtherPlayer) :-
+    first_elements_list(Size, NeutralRow-NeutralCol, FirstElementsList),
+    add_subtract_due_to_checker_type(Board, Player, OtherPlayer, FirstElementsList).
+
+% add_subtract_due_to_checker_type(+Board, +Player, +OtherPlayer, +List)
+% Adds or subtracts score based on the checker type encountered in the provided list
+add_subtract_due_to_checker_type(_,_,_,[]).
+add_subtract_due_to_checker_type(Board, Player, OtherPlayer, [H|T]) :-
+    check_checker_type(Board, H, Type),
+    add_subtract_score_due_to_type(Type, Player),
+    add_subtract_due_to_checker_type(Board, Player, OtherPlayer, T).
+
+% add_subtract_score_due_to_type(+Type, +Player)
+% Adjusts the player's score based on the type of the encountered checker
+add_subtract_score_due_to_type(Type, Player) :-
+    player_checker(Player, Checker),
+    player_score(Player, Score),
+    (
+        Type == Checker ->
+            NewScore is Score + 1,
+            retract(player_score(Player,_)),
+            asserta(player_score(Player, NewScore))
+        ;
+            NewScore is Score - 1,
+            retract(player_score(OtherPlayer,_)),
+            asserta(player_score(OtherPlayer,NewOtherScore))       
+    ).
+% check_ListOfMoves_Size(+ListOfMoves, +Size)
+% Gets a list size
+check_ListOfMoves_Size(ListOfMoves, Size):-
+    length(LisOfMoves, Size).
 
 
 
