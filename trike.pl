@@ -399,6 +399,7 @@ add_subtract_score_due_to_type(Type, Player) :-
             retract(player_score(OtherPlayer,_)),
             asserta(player_score(OtherPlayer,NewOtherScore))       
     ).
+
 % check_ListOfMoves_Size(+ListOfMoves, +Size)
 % Gets a list size
 check_ListOfMoves_Size(ListOfMoves, Size):-
